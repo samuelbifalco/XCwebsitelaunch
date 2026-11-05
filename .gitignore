@@ -1,0 +1,4 @@
+# raw, uncompressed source media (regenerable; optimized copies live in web/public/media)
+raw/
+node_modules/
+.next/
