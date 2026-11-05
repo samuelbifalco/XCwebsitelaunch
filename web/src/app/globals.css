@@ -114,3 +114,46 @@ html[data-motion="reduced"] *::after {
   0% { transform: translateY(-100%); }
   100% { transform: translateY(200%); }
 }
+
+@keyframes sheen {
+  0%, 55% { transform: translateX(0) skewX(-12deg); }
+  100% { transform: translateX(400%) skewX(-12deg); }
+}
+@keyframes shine-text {
+  0% { background-position: 200% 50%; }
+  100% { background-position: -100% 50%; }
+}
+@keyframes flow {
+  to { stroke-dashoffset: -40; }
+}
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.9; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+@keyframes beam {
+  from { background-position: 0 0; }
+  to { background-position: 160px 0; }
+}
+@keyframes halo {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.95; transform: scale(1.08); }
+}
+@keyframes rays {
+  to { transform: rotate(360deg); }
+}
+.shine-text {
+  background-image: linear-gradient(100deg, #fff 0%, #7fd8ff 35%, #24a0ed 50%, #fff 62%, #7fd8ff 80%, #24a0ed 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shine-text 7s linear infinite;
+}
+.hotspot-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 1.5px solid #7fd8ff;
+  animation: pulse-ring 2s ease-out infinite;
+}

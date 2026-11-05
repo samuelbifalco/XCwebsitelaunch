@@ -74,6 +74,11 @@ export default function CtaLink({
     >
       <span className="relative z-10 inline-flex items-center gap-2">{children}</span>
       {variant !== "ghost" && (
+        <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-full">
+          <span className="absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12 animate-[sheen_4.5s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/35 to-transparent" />
+        </span>
+      )}
+      {variant !== "ghost" && (
         <span
           aria-hidden
           className="pointer-events-none absolute inset-0 rounded-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"

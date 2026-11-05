@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useMotionPref } from "@/lib/motion";
 
 /** Lightweight canvas rain. Pauses off-screen and in reduced motion. */
-export default function Rain({ density = 110, className = "" }: { density?: number; className?: string }) {
+export default function Rain({ density = 110, speed = 1, weight = 1, className = "" }: { density?: number; speed?: number; weight?: number; className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const { reduced } = useMotionPref();
 
@@ -32,18 +32,18 @@ export default function Rain({ density = 110, className = "" }: { density?: numb
       ctx.clearRect(0, 0, w, h);
       ctx.lineCap = "round";
       for (const d of drops) {
-        d.y += d.v * 0.018; d.x -= d.v * 0.0035;
+        d.y += d.v * 0.018 * speed; d.x -= d.v * 0.0035 * speed;
         if (d.y > 1.05) { d.y = -0.05; d.x = Math.random() * 1.1; }
-        const x = d.x * w, y = d.y * h, len = 14 * d.l + 8;
+        const x = d.x * w, y = d.y * h, len = (14 * d.l + 8) * (0.6 + speed * 0.4);
         ctx.strokeStyle = `rgba(190,225,255,${d.a})`;
-        ctx.lineWidth = d.l * 0.9;
+        ctx.lineWidth = d.l * 0.9 * weight;
         ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + len * 0.22, y - len); ctx.stroke();
       }
       raf = requestAnimationFrame(loop);
     };
     loop();
     return () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); };
-  }, [reduced, density]);
+  }, [reduced, density, speed, weight]);
 
   if (reduced) return null;
   return <canvas ref={ref} aria-hidden className={`pointer-events-none absolute inset-0 h-full w-full ${className}`} />;

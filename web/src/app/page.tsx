@@ -1,4 +1,5 @@
 import Nav from "@/components/Nav";
+import ChapterRail from "@/components/ChapterRail";
 import SmoothScroll from "@/components/SmoothScroll";
 import Hero from "@/components/Hero";
 import Chaos from "@/components/Chaos";
@@ -14,6 +15,7 @@ export default function Home() {
     <>
       <SmoothScroll />
       <Nav />
+      <ChapterRail />
       <main id="main">
         <Hero />
         <Chaos />

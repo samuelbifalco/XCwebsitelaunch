@@ -27,6 +27,17 @@ Optional: set `NEXT_PUBLIC_SITE_URL` to the deployed URL so canonical/OG URLs re
 | 6 | People — *Better Tools. More Confidence.* | Split screen: reassured homeowner (Higgsfield) vs. XactaClaim product film, glowing seam. |
 | 7 | Finale — *Clarity in Every Claim.* | Same camera angle: storm → soft daylight wipe (house still damaged, tarped). Giant magnetic **Discover XactaClaim** CTA + accurate plan cards. |
 
+## V2 enhancements (no new Higgsfield credits — built from existing footage and stills)
+
+- **Hero:** layered depth parallax (video, far rain, near rain, copy move at different rates), shimmering headline, sheen on CTAs, velocity-reactive scroll cue; scroll pushes the camera into the front of the house and passes into darkness. The video pauses off-screen.
+- **Chaos:** continues the same push-in from darkness; 18 claim items in three depth layers with pointer parallax, entering in waves from their nearest edge; inbox toasts with an unread counter; a held overload beat; then everything converges into a point of light.
+- **Adjuster:** a pinned three-scene sequence (Arrive → Document → Guide) with an iris open from the point of light, a field-documentation viewfinder over the damage photos (focus lock, flash, captured thumbnails), step progress bars and synced copy; ends by pushing into the glowing tablet.
+- **Workspace (centerpiece):** 3D cloud of items with camera orbit → items sort into Photos / Documents / Messages → compress into the rising screen → the real UI expands with layered depth frames, pointer tilt, camera moves across the screen and accurate hotspots per capability (hover / focus / tap).
+- **Journey:** cinematic stage per step (scenes and real screens, labeled), flowing connector, node hover previews, animated mini claim-status demo, "Play the journey" auto-play, swipe + Prev/Next stepper on phones.
+- **People:** pinned split-perspective — scroll moves the divider between the real-world scene and the workspace while a light beam links the tablet to the claim file; one beat per benefit.
+- **Finale:** same house and hero framing; camera pulls back while the storm clears from the sky down, light warms, sun bloom and rays rise, rain fades; scroll-revealed headline and a haloed CTA.
+- **Global:** chapter rail (desktop), long pins only at ≥1024px with stacked phone layouts, full reduced-motion fallbacks.
+
 ## Accuracy notes
 
 - Copy, feature names and plan availability come from xactaclaim.com (home, /features, /pricing), checked Nov 2026: Solo $0 (1 trial claim, 1 live AI action), Pro $19.99/mo, Pro+ $34.99/mo (estimate comparison + demand drafting are Pro+). "When configured" caveats for SMS/voice are kept.

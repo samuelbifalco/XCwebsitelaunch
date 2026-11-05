@@ -1,111 +1,198 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
-import { useMotionPref } from "@/lib/motion";
+import { useMotionPref, useIsDesktop } from "@/lib/motion";
 import SplitHeadline from "./SplitHeadline";
 
-const POINTS = [
-  { t: "For the adjuster", d: "Claim details, documents, photos and saved summaries in one place before every conversation." },
-  { t: "For the homeowner", d: "A secure portal to upload documents and photos, and tracked updates when messaging is configured." },
-  { t: "For the team", d: "A shared timeline and work queue, with seats for growing teams on Pro and Pro+." },
+const BEATS = [
+  {
+    t: "For the adjuster",
+    d: "Claim details, documents, photos and saved summaries in one place before every conversation.",
+    src: "/media/ui_screen.webp",
+    zoom: "none",
+    tag: "Claim workspace",
+  },
+  {
+    t: "For the homeowner",
+    d: "A secure portal to upload documents and photos, and tracked updates when messaging is configured.",
+    src: "/media/ui_screen.webp",
+    zoom: "scale(1.6) translate(-18.75%, 18.75%)",
+    tag: "Activity timeline",
+  },
+  {
+    t: "For the team",
+    d: "A shared timeline and work queue, with seats for growing teams on Pro and Pro+.",
+    src: "/media/ui_estimate.webp",
+    zoom: "none",
+    tag: "Follow-up tasks",
+  },
 ];
+const SPLITS = [0.62, 0.56, 0.5];
 
 export default function People() {
   const root = useRef<HTMLElement>(null);
-  const vid = useRef<HTMLVideoElement>(null);
+  const [beat, setBeat] = useState(0);
+  const beatRef = useRef(0);
   const { reduced, ready } = useMotionPref();
-  const [load, setLoad] = useState(false);
-
-  // Lazy-load the product film only when near the viewport.
-  useEffect(() => {
-    const el = root.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) setLoad(true);
-        const v = vid.current;
-        if (!v) return;
-        if (e.isIntersecting && !reduced) v.play().catch(() => {});
-        else v.pause();
-      },
-      { rootMargin: "200px" }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [reduced]);
+  const desktop = useIsDesktop();
+  const pinned = ready && !reduced && desktop;
 
   useGSAP(
     () => {
       if (!ready || reduced) return;
+      if (!pinned) {
+        gsap.utils.toArray<HTMLElement>(".pp-m-reveal").forEach((el) =>
+          gsap.fromTo(el, { clipPath: "inset(8% 8% 8% 8% round 24px)", y: 30 }, { clipPath: "inset(0% 0% 0% 0% round 24px)", y: 0, ease: "none", scrollTrigger: { trigger: el, start: "top 92%", end: "top 50%", scrub: 1 } })
+        );
+        return;
+      }
+      const stage = root.current!.querySelector<HTMLElement>(".pp-stage")!;
+      const state = { split: 1 };
+      const apply = () => stage.style.setProperty("--split", String(state.split));
+      apply();
       const tl = gsap.timeline({
         defaults: { ease: "none" },
-        scrollTrigger: { trigger: ".pp-split", start: "top 80%", end: "center 45%", scrub: 1 },
+        scrollTrigger: {
+          trigger: stage,
+          start: "top top",
+          end: "+=230%",
+          scrub: 1,
+          pin: true,
+          anticipatePin: 1,
+          onUpdate(self) {
+            const p = self.progress;
+            const b = p < 0.42 ? 0 : p < 0.7 ? 1 : 2;
+            if (b !== beatRef.current) {
+              beatRef.current = b;
+              setBeat(b);
+            }
+          },
+        },
       });
-      tl.fromTo(".pp-left", { clipPath: "inset(0 100% 0 0 round 24px)" }, { clipPath: "inset(0 0% 0 0 round 24px)" }, 0)
-        .fromTo(".pp-right", { clipPath: "inset(0 0 0 100% round 24px)" }, { clipPath: "inset(0 0 0 0% round 24px)" }, 0.1)
-        .fromTo(".pp-seam", { scaleY: 0, opacity: 0 }, { scaleY: 1, opacity: 1 }, 0.3)
-        .fromTo(".pp-left img", { scale: 1.25 }, { scale: 1 }, 0)
-        .fromTo(".pp-right video", { scale: 1.25 }, { scale: 1 }, 0.1);
+      tl.fromTo(".pp-real img", { scale: 1.2 }, { scale: 1, duration: 1 }, 0)
+        .to(state, { split: SPLITS[0], duration: 0.16, ease: "power2.out", onUpdate: apply }, 0.02)
+        .fromTo(".pp-head", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.08 }, 0)
+        .fromTo(".pp-device", { opacity: 0, x: 80, rotateY: -18 }, { opacity: 1, x: 0, rotateY: 0, duration: 0.14, ease: "power2.out" }, 0.08)
+        .fromTo(".pp-beam", { scaleX: 0 }, { scaleX: 1, duration: 0.1, ease: "power2.out" }, 0.2)
+        .fromTo(".pp-node", { scale: 0 }, { scale: 1, stagger: 0.05, duration: 0.04, ease: "back.out(3)" }, 0.2)
+        .fromTo(".pp-list", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.08 }, 0.22)
+        .to(state, { split: SPLITS[1], duration: 0.12, ease: "power2.inOut", onUpdate: apply }, 0.42)
+        .to(state, { split: SPLITS[2], duration: 0.12, ease: "power2.inOut", onUpdate: apply }, 0.7)
+        .to({}, { duration: 0.1 }, 0.9);
     },
-    { scope: root, dependencies: [reduced, ready], revertOnUpdate: true }
+    { scope: root, dependencies: [reduced, ready, pinned], revertOnUpdate: true }
   );
 
-  return (
-    <section ref={root} id="people" aria-labelledby="pp-title" className="relative overflow-hidden bg-ink py-28 sm:py-36">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.3em] text-cyan/80">Chapter 05 — Technology that supports people</p>
-        <SplitHeadline
-          className="max-w-4xl text-[clamp(2.2rem,5.6vw,5rem)] font-semibold leading-[0.98] tracking-[-0.045em]"
-          lines={[{ text: "Better Tools." }, { text: "More Confidence.", className: "text-cyan" }]}
-        />
+  const heading = (
+    <SplitHeadline
+      className="max-w-4xl text-[clamp(2.2rem,5vw,4.6rem)] font-semibold leading-[0.98] tracking-[-0.045em]"
+      lines={[{ text: "Better Tools." }, { text: "More Confidence.", className: "text-cyan" }]}
+    />
+  );
 
-        <div className="pp-split relative mt-14 grid gap-4 md:grid-cols-2 md:gap-0">
-          <figure className="pp-left relative aspect-[4/5] overflow-hidden rounded-3xl md:aspect-auto md:h-[min(72vh,680px)] md:rounded-r-none">
+  if (!pinned) {
+    return (
+      <section ref={root} id="people" aria-labelledby="pp-title" className="relative overflow-hidden bg-ink py-24 sm:py-32">
+        <div className="mx-auto max-w-5xl px-5 sm:px-8">
+          <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.3em] text-cyan/80">Chapter 05 — Technology that supports people</p>
+          <div id="pp-title">{heading}</div>
+          <figure className="pp-m-reveal relative mt-10 overflow-hidden rounded-3xl">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/media/duo_reassured.webp"
-              alt="The adjuster shows the homeowner his tablet on the walkway; she looks relieved as the clouds break."
-              loading="lazy"
-              className="h-full w-full object-cover object-[38%_center]"
-            />
-            <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-transparent" />
-            <figcaption className="absolute bottom-5 left-5 font-mono text-[11px] uppercase tracking-[0.25em] text-white/80">The real world</figcaption>
+            <img src="/media/duo_reassured_m.webp" alt="The adjuster shows the homeowner his tablet on the walkway; she looks relieved as the clouds break." loading="lazy" className="aspect-[4/5] w-full object-cover sm:aspect-video" />
+            <figcaption className="absolute bottom-4 left-4 font-mono text-[11px] uppercase tracking-[0.25em] text-white/85">The real world</figcaption>
           </figure>
-          <figure className="pp-right relative aspect-video overflow-hidden rounded-3xl bg-[#081427] md:aspect-auto md:h-[min(72vh,680px)] md:rounded-l-none">
-            {load ? (
-              <video
-                ref={vid}
-                src="/media/product_reveal.mp4"
-                poster="/media/product_reveal_poster.webp"
-                muted
-                playsInline
-                loop
-                preload="none"
-                aria-label="XactaClaim product film: claim documents and photos move onto the claim workspace, followed by Policy Review and Estimate Comparison screens."
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src="/media/product_reveal_poster.webp" alt="" loading="lazy" className="h-full w-full object-cover" />
-            )}
-            <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-transparent" />
-            <figcaption className="absolute bottom-5 right-5 text-right font-mono text-[11px] uppercase tracking-[0.25em] text-white/80">
-              The organized file
-              <span className="mt-1 block normal-case tracking-normal text-white/45">Footage: XactaClaim product film</span>
-            </figcaption>
+          <div aria-hidden className="mx-auto h-14 w-[2px] bg-gradient-to-b from-cyan to-electric shadow-[0_0_14px_#7fd8ff]" />
+          <figure className="pp-m-reveal relative overflow-hidden rounded-3xl border border-cyan/30 bg-[#081427]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/media/ui_screen.webp" alt="XactaClaim claim workspace with documents, photos, policy and activity." loading="lazy" className="aspect-[16/10] w-full object-cover" />
+            <figcaption className="absolute bottom-3 right-3 rounded-full bg-ink/75 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-white/75">The organized file · real XactaClaim screen</figcaption>
           </figure>
-          <div aria-hidden className="pp-seam pointer-events-none absolute inset-y-6 left-1/2 hidden w-[2px] -translate-x-1/2 origin-center bg-cyan shadow-[0_0_20px_#7fd8ff,0_0_60px_#24a0ed] md:block" />
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            {BEATS.map((b) => (
+              <div key={b.t} className="border-t border-white/10 pt-5">
+                <p className="font-medium">{b.t}</p>
+                <p className="mt-2 text-sm leading-relaxed text-white/60">{b.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section ref={root} id="people" aria-labelledby="pp-title" className="relative bg-ink">
+      <div className="pp-stage relative h-[100svh] overflow-hidden" style={{ ["--split" as string]: 1 }}>
+        {/* the real world */}
+        <div className="pp-real absolute inset-0" style={{ clipPath: "inset(0 calc((1 - var(--split)) * 100%) 0 0)" }}>
+          <div className="absolute inset-y-0 left-0 w-[80%] overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/media/duo_reassured.webp" alt="The adjuster shows the homeowner his tablet on the walkway; she looks relieved as the clouds break." loading="lazy" className="h-full w-full object-cover object-[45%_center]" />
+          </div>
+          <div aria-hidden className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,6,15,.7)_0%,transparent_30%,transparent_55%,rgba(3,6,15,.9)_100%)]" />
+          <p className="absolute bottom-6 left-[4vw] font-mono text-[11px] uppercase tracking-[0.25em] text-white/80">The real world</p>
         </div>
 
-        <div className="mt-14 grid gap-8 md:grid-cols-3">
-          {POINTS.map((p) => (
-            <div key={p.t} className="border-t border-white/10 pt-5">
-              <p className="font-medium">{p.t}</p>
-              <p className="mt-2 text-sm leading-relaxed text-white/60">{p.d}</p>
-            </div>
-          ))}
+        {/* the organized workspace */}
+        <div className="pp-digital absolute inset-0 bg-[radial-gradient(90%_80%_at_80%_50%,#0b2347_0%,#06101f_60%,#03060f_100%)]" style={{ clipPath: "inset(0 0 0 calc(var(--split) * 100%))" }}>
+          <div aria-hidden className="grid-lines absolute inset-0 opacity-50" />
+          <p className="absolute bottom-6 right-[4vw] font-mono text-[11px] uppercase tracking-[0.25em] text-white/80">The organized file</p>
         </div>
+        <div className="pp-device absolute top-1/2 [perspective:1400px]" style={{ left: "calc(var(--split) * 100% + 4vw)", width: "calc((1 - var(--split)) * 100% - 8vw)", translate: "0 -50%" }}>
+          <div className="overflow-hidden rounded-2xl border border-cyan/30 bg-[#081427] shadow-[0_0_0_1px_rgba(36,160,237,.25),0_40px_100px_-20px_rgba(36,160,237,.5)]">
+            <div className="flex items-center gap-2 border-b border-white/10 px-4 py-2">
+              <span className="h-2 w-2 rounded-full bg-white/15" />
+              <span className="h-2 w-2 rounded-full bg-white/15" />
+              <span className="h-2 w-2 rounded-full bg-white/15" />
+              <span className="ml-2 font-mono text-[10px] uppercase tracking-wider text-white/45">XactaClaim · {BEATS[beat].tag}</span>
+            </div>
+            <div className="relative aspect-[16/10] overflow-hidden">
+              {BEATS.map((b, i) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={b.t}
+                  src={b.src}
+                  alt={i === beat ? `Real XactaClaim screen: ${b.tag}` : ""}
+                  aria-hidden={i !== beat}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-[1000ms] ease-[cubic-bezier(.16,1,.3,1)]"
+                  style={{ opacity: i === beat ? 1 : 0, transform: i === beat ? b.zoom : "scale(1.05)" }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* the connection: tablet ⇄ claim file */}
+        <div aria-hidden className="pointer-events-none absolute" style={{ top: "61%", left: "39%", width: "calc(var(--split) * 100% + 4vw - 39%)" }}>
+          <div className="pp-beam h-[2px] origin-left rounded-full shadow-[0_0_12px_#7fd8ff,0_0_30px_#24a0ed] [background:repeating-linear-gradient(90deg,#7fd8ff_0_18px,rgba(127,216,255,.25)_18px_40px)] [background-size:160px_2px]" style={{ animation: "beam 1.6s linear infinite" }} />
+          <span className="pp-node absolute -left-2 -top-[7px] h-4 w-4 rounded-full border-2 border-cyan bg-ink shadow-[0_0_14px_#7fd8ff]" />
+          <span className="pp-node absolute -right-2 -top-[7px] h-4 w-4 rounded-full bg-cyan shadow-[0_0_14px_#7fd8ff]" />
+        </div>
+        <div aria-hidden className="pointer-events-none absolute inset-y-0 w-[2px] -translate-x-1/2 bg-cyan/80 shadow-[0_0_20px_#7fd8ff,0_0_60px_#24a0ed]" style={{ left: "calc(var(--split) * 100%)" }} />
+
+        {/* narrative */}
+        <div className="pp-head absolute left-[4vw] top-24 max-w-[44vw]">
+          <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.3em] text-cyan/90">Chapter 05 — Technology that supports people</p>
+          <div id="pp-title">{heading}</div>
+        </div>
+        <ol className="pp-list glass absolute bottom-16 left-[4vw] w-[min(420px,34vw)] space-y-1 rounded-2xl p-3">
+          {BEATS.map((b, i) => {
+            const on = i === beat;
+            return (
+              <li key={b.t} className={`rounded-xl px-4 py-3 transition-all duration-500 ${on ? "bg-white/[0.07]" : "opacity-55"}`}>
+                <p className="flex items-center gap-3 font-medium">
+                  <span className={`h-2 w-2 rounded-full transition-colors ${on ? "bg-cyan shadow-[0_0_10px_#7fd8ff]" : "bg-white/30"}`} />
+                  {b.t}
+                </p>
+                <div className={`grid transition-all duration-500 ${on ? "mt-1 grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+                  <p className="overflow-hidden pl-5 text-sm leading-relaxed text-white/70">{b.d}</p>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
       </div>
     </section>
   );

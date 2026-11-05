@@ -6,11 +6,12 @@ import { useMotionPref } from "@/lib/motion";
 type Line = { text: string; className?: string };
 
 const word: Variants = {
-  hidden: { y: "110%", rotate: 4, opacity: 0 },
+  hidden: { y: "110%", rotate: 4, opacity: 0, filter: "blur(10px)" },
   show: (i: number) => ({
     y: "0%",
     rotate: 0,
     opacity: 1,
+    filter: "blur(0px)",
     transition: { duration: 1.05, ease: [0.16, 1, 0.3, 1], delay: i * 0.075 },
   }),
 };

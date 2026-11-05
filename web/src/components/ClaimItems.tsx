@@ -26,6 +26,13 @@ export const ITEMS: Item[] = [
   { id: "d2", kind: "doc", title: "Carrier letter", body: "Request for additional documentation", x: 62, y: 38, r: 4, depth: 0.85 },
   { id: "d3", kind: "doc", title: "Receipt — emergency tarp", body: "Temporary roof protection", x: 90, y: 82, r: -5, depth: 1.05 },
   { id: "s2", kind: "sms", title: "Homeowner", body: "Mortgage company is asking for an update", x: 8, y: 84, r: 6, depth: 1.25 },
+  // extra density (desktop only, Chaos scene)
+  { id: "d4", kind: "doc", title: "Mortgage company letter", body: "Loss draft department — status request", x: 30, y: 15, r: 5, depth: 0.75 },
+  { id: "m2", kind: "email", title: "Documentation request", body: "Please provide receipts and photos of…", x: 84, y: 31, r: -6, depth: 0.95 },
+  { id: "s3", kind: "sms", title: "Homeowner", body: "Did you get the photos I sent last night?", x: 45, y: 62, r: 3, depth: 1.35 },
+  { id: "v2", kind: "voicemail", title: "Voicemail · 1:14", body: "Contractor — scheduling", x: 66, y: 11, r: -4, depth: 0.8 },
+  { id: "n2", kind: "note", body: "Moisture readings — attic??", x: 76, y: 58, r: 8, depth: 1.15 },
+  { id: "e2", kind: "estimate", title: "Revised estimate", x: 38, y: 88, r: -4, depth: 0.9 },
 ];
 
 export function ClaimCard({ item }: { item: Item }) {
