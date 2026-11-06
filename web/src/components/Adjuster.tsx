@@ -40,7 +40,9 @@ export default function Adjuster() {
   useGSAP(
     () => {
       if (!ready || reduced) return;
+      const streakWrap = document.getElementById("xc-streak-wrap");
       if (!pinned) {
+        if (streakWrap) gsap.fromTo(streakWrap, { opacity: 1 }, { opacity: 0, ease: "none", immediateRender: false, scrollTrigger: { trigger: root.current, start: "top 95%", end: "top 55%", scrub: true } });
         // Phones: unpinned reveals per scene card.
         gsap.utils.toArray<HTMLElement>(".adj-m-card").forEach((el) => {
           gsap.fromTo(el.querySelector(".adj-m-media"), { clipPath: "inset(10% 10% 10% 10% round 24px)" }, { clipPath: "inset(0% 0% 0% 0% round 24px)", ease: "none", scrollTrigger: { trigger: el, start: "top 90%", end: "top 40%", scrub: 1 } });
@@ -56,7 +58,11 @@ export default function Adjuster() {
       });
 
       // Scene 1 — the adjuster arrives (opens from the chaos' point of light).
-      tl.fromTo(".adj-s1", { clipPath: "circle(3% at 50% 50%)" }, { clipPath: "circle(80% at 50% 50%)", duration: 0.08, ease: "power2.inOut" }, 0)
+      tl.fromTo(".adj-s1", { clipPath: "inset(50% 0% 50% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.09, ease: "power3.inOut" }, 0.005)
+        .fromTo(streakWrap, { opacity: 1 }, { opacity: 0, duration: 0.002, immediateRender: false }, 0.004)
+        .fromTo(".adj-edge-t", { top: "50%", opacity: 1 }, { top: "0%", opacity: 0, duration: 0.09, ease: "power3.inOut", immediateRender: false }, 0.005)
+        .fromTo(".adj-edge-b", { top: "50%", opacity: 1 }, { top: "100%", opacity: 0, duration: 0.09, ease: "power3.inOut", immediateRender: false }, 0.005)
+        .fromTo(".adj-open-glow", { opacity: 1, scaleY: 0.2 }, { opacity: 0, scaleY: 3, duration: 0.08, immediateRender: false }, 0.005)
         .fromTo(".adj-media-1", { scale: 1.35 }, { scale: 1.08, duration: 0.12 }, 0)
         .fromTo(".adj-panel", { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: 0.06 }, 0.05)
         .to(".adj-media-1", { scale: 1.22, duration: 0.2 }, 0.12)
@@ -171,6 +177,13 @@ export default function Adjuster() {
         <div aria-hidden className="grid-lines absolute inset-0 opacity-40 [mask-image:linear-gradient(90deg,transparent,black_70%)]" />
       </div>
 
+      {/* the line of light from the chaos splits open into the scene */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-[15]">
+        <div className="adj-open-glow absolute opacity-0 inset-x-0 top-1/2 h-40 -translate-y-1/2 blur-3xl [background:linear-gradient(90deg,transparent,rgba(36,160,237,.55)_35%,rgba(127,216,255,.65)_50%,rgba(36,160,237,.55)_65%,transparent)]" />
+        <div className="adj-edge-t absolute opacity-0 inset-x-0 top-1/2 h-[2px] -translate-y-1/2 [background:linear-gradient(90deg,transparent,rgba(127,216,255,.85)_25%,#fff_50%,rgba(127,216,255,.85)_75%,transparent)] shadow-[0_0_18px_3px_rgba(127,216,255,.7)]" />
+        <div className="adj-edge-b absolute opacity-0 inset-x-0 top-1/2 h-[2px] -translate-y-1/2 [background:linear-gradient(90deg,transparent,rgba(127,216,255,.85)_25%,#fff_50%,rgba(127,216,255,.85)_75%,transparent)] shadow-[0_0_18px_3px_rgba(127,216,255,.7)]" />
+      </div>
+
       {/* Scene 2 — field documentation viewfinder */}
       <div className="adj-s2 absolute inset-0 overflow-hidden bg-black" style={{ clipPath: "polygon(100% 0,100% 0,100% 100%,100% 100%)" }}>
         <div className="adj-ladder absolute inset-0">
@@ -239,7 +252,7 @@ export default function Adjuster() {
             {SCENES.map((s, i) => (
               <li key={s.step}>
                 <span className="block h-[3px] overflow-hidden rounded-full bg-white/10">
-                  <span className={`adj-bar-${i} block h-full origin-left scale-x-0 bg-gradient-to-r from-electric to-cyan shadow-[0_0_10px_#24a0ed]`} />
+                  <span className={`adj-bar-${i} block h-full origin-left bg-gradient-to-r from-electric to-cyan shadow-[0_0_10px_#24a0ed]`} />
                 </span>
                 <span className="mt-2 block font-mono text-[10px] uppercase tracking-[0.2em] text-white/60">
                   0{i + 1} {s.step}

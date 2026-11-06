@@ -41,7 +41,7 @@ export default function Nav() {
       >
         <a href="#top" className="flex shrink-0 items-center" aria-label="XactaClaim — back to top">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/xactaclaim-logo-light.png" alt="XactaClaim" width={150} height={32} className="h-7 w-auto sm:h-8" />
+          <img src="/xactaclaim-logo-light.webp" alt="XactaClaim" width={150} height={32} className="h-7 w-auto sm:h-8" />
         </a>
         <nav aria-label="Story chapters" className="hidden items-center gap-7 text-[13px] text-white/65 lg:flex">
           {chapters.map((c) => (

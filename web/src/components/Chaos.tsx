@@ -35,6 +35,7 @@ export default function Chaos() {
     () => {
       if (!ready || reduced) return;
       const stage = root.current!;
+      const streak = document.getElementById("xc-streak-inner");
       const cards = gsap.utils.toArray<HTMLElement>(".chaos-card");
       const W = () => stage.clientWidth;
       const H = () => stage.clientHeight;
@@ -102,8 +103,13 @@ export default function Chaos() {
       tl.to(".chaos-inbox", { opacity: 0, duration: 0.05 }, 0.64);
       tl.to(".chaos-notif", { x: () => -W() * 0.35, y: () => H() * 0.25, scale: 0.3, opacity: 0, stagger: 0.01, duration: 0.15, ease: "power2.in" }, 0.64);
       tl.to(".chaos-bg, .chaos-backdrop", { opacity: 0, duration: 0.18 }, 0.72);
-      tl.fromTo(".chaos-orb", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.12, ease: "back.out(2)" }, 0.82);
-      tl.to(".chaos-orb-label", { opacity: 1, y: 0, duration: 0.06 }, 0.9);
+      tl.fromTo(".chaos-bloom", { opacity: 0 }, { opacity: 1, duration: 0.06 }, 0.78)
+        .to(".chaos-bloom", { opacity: 0.35, duration: 0.1 }, 0.86)
+        .fromTo(streak, { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.08, ease: "power3.out" }, 0.8)
+        .to(".chaos-vignette", { opacity: 0, duration: 0.06 }, 0.9)
+        .fromTo(".chaos-line", { opacity: 0, y: 24, filter: "blur(12px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.07 }, 0.85)
+        .fromTo(".chaos-sub", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.05 }, 0.9)
+        .to(".chaos-line, .chaos-sub, .chaos-bloom", { opacity: 0, duration: 0.04 }, 0.96);
 
       // Pointer depth: layers drift by different amounts.
       const movers = (["far", "mid", "near"] as const).map((l, i) => ({
@@ -180,12 +186,13 @@ export default function Chaos() {
       </div>
 
       {!reduced && (
-        <div aria-hidden className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-          <div className="chaos-orb relative h-24 w-24 opacity-0">
-            <span className="absolute inset-0 rounded-full bg-cyan blur-2xl" />
-            <span className="absolute inset-6 rounded-full bg-white shadow-[0_0_60px_20px_rgba(127,216,255,.8)]" />
-          </div>
-          <p className="chaos-orb-label absolute top-[calc(50%+80px)] translate-y-3 font-mono text-[11px] uppercase tracking-[0.3em] text-cyan opacity-0">Someone has to make sense of it</p>
+        <div aria-hidden className="pointer-events-none absolute inset-0 z-10">
+          {/* the chaos collapses into a single line of light — Chapter 02 opens from it */}
+          <div className="chaos-bloom absolute inset-0 opacity-0 [background:radial-gradient(70%_45%_at_50%_50%,rgba(127,216,255,.32),rgba(36,160,237,.12)_45%,transparent_75%)]" />
+          <p className="chaos-line absolute inset-x-0 bottom-[calc(50%+1.5rem)] px-6 text-center [text-wrap:balance] font-[family-name:var(--font-instrument-serif)] text-[clamp(2rem,5vw,4.4rem)] italic leading-none text-white opacity-0 [text-shadow:0_0_40px_rgba(127,216,255,.45)]">
+            Someone has to make sense of it.
+          </p>
+          <p className="chaos-sub absolute inset-x-0 top-[calc(50%+1.75rem)] text-center font-mono text-[11px] uppercase tracking-[0.35em] text-cyan opacity-0">Chapter 02 — The adjuster arrives</p>
         </div>
       )}
 

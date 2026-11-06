@@ -41,6 +41,7 @@ export default function Finale() {
         .fromTo(".fn-rays", { opacity: 0 }, { opacity: 0.14, duration: 0.4 }, 0.45)
         .fromTo(".fn-shade", { opacity: 0.55 }, { opacity: 0.15, duration: 0.5 }, 0.2)
         .fromTo(".fn-kicker", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.08 }, 0.5)
+        .fromTo(".fn-backdrop", { opacity: 0 }, { opacity: 1, duration: 0.1 }, 0.48)
         .fromTo(".fn-word", { yPercent: 110, opacity: 0, filter: "blur(10px)" }, { yPercent: 0, opacity: 1, filter: "blur(0px)", stagger: 0.035, duration: 0.12, ease: "power3.out" }, 0.55)
         .fromTo(".fn-tag span", { opacity: 0, y: 20 }, { opacity: 1, y: 0, stagger: 0.04, duration: 0.07 }, 0.72)
         .fromTo(".fn-cta", { opacity: 0, scale: 0.85, filter: "blur(8px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.1, ease: "back.out(1.6)" }, 0.82)
@@ -79,7 +80,7 @@ export default function Finale() {
         <div aria-hidden className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,6,15,.7)_0%,rgba(3,6,15,.05)_40%,rgba(3,6,15,.2)_65%,rgba(3,6,15,.95)_100%)]" />
 
         <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col items-center justify-center px-5 text-center">
-          <div aria-hidden className="fn-kicker pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[70%] w-[min(1100px,95%)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(3,6,15,.55),transparent)]" />
+          <div aria-hidden className="fn-backdrop pointer-events-none absolute left-1/2 top-1/2 opacity-0 -z-10 h-[70%] w-[min(1100px,95%)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(3,6,15,.55),transparent)]" />
           <p className="fn-kicker mb-4 font-mono text-[11px] uppercase tracking-[0.3em] text-white/85 [text-shadow:0_2px_12px_rgba(0,0,0,.6)]">Chapter 06 — The same house. Restored.</p>
           <h2 id="fn-title" aria-label="Clarity in Every Claim." className="relative text-[clamp(2.6rem,8vw,7.5rem)] font-semibold leading-[0.95] tracking-[-0.05em] [text-shadow:0_2px_14px_rgba(0,0,0,.35)]">
             {words.map((w, i) => (

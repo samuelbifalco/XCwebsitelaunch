@@ -17,7 +17,7 @@ export default function Footer() {
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-5 py-12 sm:px-8 md:flex-row md:items-start md:justify-between">
         <div className="max-w-sm">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/xactaclaim-logo-light.png" alt="XactaClaim" width={160} height={34} className="h-8 w-auto" loading="lazy" />
+          <img src="/xactaclaim-logo-light.webp" alt="XactaClaim" width={160} height={34} className="h-8 w-auto" loading="lazy" />
           <p className="mt-4 text-sm text-white/50">
             AI-assisted claim workspace for public adjusters. XactaClaim is live in Early Access.
           </p>

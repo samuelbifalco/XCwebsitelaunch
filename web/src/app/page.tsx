@@ -2,6 +2,7 @@ import Nav from "@/components/Nav";
 import ChapterRail from "@/components/ChapterRail";
 import Trailer from "@/components/Trailer";
 import StickyCta from "@/components/StickyCta";
+import LightStreak from "@/components/LightStreak";
 import SmoothScroll from "@/components/SmoothScroll";
 import Hero from "@/components/Hero";
 import Chaos from "@/components/Chaos";
@@ -18,6 +19,7 @@ export default function Home() {
       <SmoothScroll />
       <Nav />
       <ChapterRail />
+      <LightStreak />
       <main id="main">
         <Hero />
         <Chaos />
