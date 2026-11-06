@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { gsap, useGSAP } from "@/lib/gsap";
-import { useMotionPref } from "@/lib/motion";
+import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { useMotionPref, useIsDesktop } from "@/lib/motion";
 import { track } from "@/lib/analytics";
 import LazyVideo from "./LazyVideo";
+import { scrollToTarget } from "./SmoothScroll";
 
 type Stage = {
   key: string;
@@ -100,17 +101,10 @@ export default function Journey() {
   const [peek, setPeek] = useState<number | null>(null);
   const [playing, setPlaying] = useState(false);
   const { reduced, ready } = useMotionPref();
-
-  useGSAP(
-    () => {
-      if (!ready || reduced) return;
-      gsap.fromTo(".jr-line", { scaleX: 0 }, { scaleX: 1, ease: "none", scrollTrigger: { trigger: ".jr-track", start: "top 85%", end: "top 45%", scrub: 1 } });
-      gsap.fromTo(".jr-node", { scale: 0.6, opacity: 0.3 }, { scale: 1, opacity: 1, stagger: 0.12, ease: "back.out(2)", scrollTrigger: { trigger: ".jr-track", start: "top 85%", end: "top 50%", scrub: 1 } });
-      gsap.fromTo(".jr-stage", { clipPath: "inset(12% 8% 12% 8% round 28px)", y: 60 }, { clipPath: "inset(0% 0% 0% 0% round 24px)", y: 0, ease: "none", scrollTrigger: { trigger: ".jr-stage", start: "top 95%", end: "top 45%", scrub: 1 } });
-    },
-    { scope: root, dependencies: [reduced, ready], revertOnUpdate: true }
-  );
-
+  const desktop = useIsDesktop();
+  const pinned = ready && !reduced && desktop;
+  const st = useRef<ScrollTrigger | null>(null);
+  const fill = useRef<HTMLDivElement>(null);
   const activeRef = useRef(0);
   const choose = useCallback((i: number, via: string) => {
     const cur = activeRef.current;
@@ -120,6 +114,35 @@ export default function Journey() {
     setActive(i);
     track("journey_stage", { stage: STAGES[i].key, via });
   }, []);
+
+  useGSAP(
+    () => {
+      if (!ready || reduced) return;
+      if (pinned) {
+        // Desktop: the chapter pins and scrolling walks the claim, stage by stage.
+        st.current = ScrollTrigger.create({
+          trigger: root.current,
+          start: "top top",
+          end: "+=420%",
+          pin: true,
+          anticipatePin: 1,
+          onUpdate(self) {
+            const p = self.progress;
+            if (fill.current) fill.current.style.width = `${Math.min(1, p * 1.12) * 100}%`;
+            choose(Math.min(STAGES.length - 1, Math.floor(p * STAGES.length * 0.999)), "scroll");
+          },
+        });
+        return () => {
+          st.current = null;
+        };
+      }
+      gsap.fromTo(".jr-line", { scaleX: 0 }, { scaleX: 1, ease: "none", scrollTrigger: { trigger: ".jr-track", start: "top 85%", end: "top 45%", scrub: 1 } });
+      gsap.fromTo(".jr-node", { scale: 0.6, opacity: 0.3 }, { scale: 1, opacity: 1, stagger: 0.12, ease: "back.out(2)", scrollTrigger: { trigger: ".jr-track", start: "top 85%", end: "top 50%", scrub: 1 } });
+      gsap.fromTo(".jr-stage", { clipPath: "inset(12% 8% 12% 8% round 28px)", y: 60 }, { clipPath: "inset(0% 0% 0% 0% round 24px)", y: 0, ease: "none", scrollTrigger: { trigger: ".jr-stage", start: "top 95%", end: "top 45%", scrub: 1 } });
+    },
+    { scope: root, dependencies: [reduced, ready], revertOnUpdate: true }
+  );
+
 
   // Optional auto-play — never in reduced motion; stops at the last stage.
   useEffect(() => {
@@ -133,20 +156,28 @@ export default function Journey() {
 
   const s = STAGES[active];
   const pct = (active / (STAGES.length - 1)) * 100;
-  const go = (d: number) => choose(Math.max(0, Math.min(STAGES.length - 1, active + d)), "stepper");
+  /** In the pinned layout a stage is a scroll position; elsewhere it is just state. */
+  const goTo = (i: number, via: string) => {
+    const t = st.current;
+    if (pinned && t) scrollToTarget(t.start + (t.end - t.start) * ((i + 0.5) / STAGES.length));
+    else choose(i, via);
+  };
+  const go = (d: number) => goTo(Math.max(0, Math.min(STAGES.length - 1, active + d)), "stepper");
 
   return (
-    <section ref={root} id="journey" aria-labelledby="jr-title" className="relative overflow-hidden bg-ink py-28 sm:py-36">
+    <section ref={root} id="journey" aria-labelledby="jr-title" className={`relative overflow-hidden bg-ink ${pinned ? "h-[100svh]" : "py-28 sm:py-36"}`}>
       <div aria-hidden className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_0%,rgba(36,160,237,.18),transparent_70%)]" />
-      <div className="relative mx-auto max-w-6xl px-5 sm:px-8">
+      <div className={`relative mx-auto max-w-6xl px-5 sm:px-8 ${pinned ? "flex h-full flex-col justify-center pb-6 pt-20" : ""}`}>
         <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.3em] text-cyan/80">Chapter 04 — Walk the claim</p>
         <div className="flex flex-wrap items-end justify-between gap-6">
-          <h2 id="jr-title" className="max-w-2xl text-[clamp(2rem,4.6vw,3.8rem)] font-semibold leading-[1] tracking-[-0.04em]">
+          <h2 id="jr-title" className={`font-semibold leading-[1] tracking-[-0.04em] ${pinned ? "max-w-4xl text-[clamp(2rem,3.4vw,3rem)]" : "max-w-2xl text-[clamp(2rem,4.6vw,3.8rem)]"}`}>
             From the first inspection <span className="font-[family-name:var(--font-instrument-serif)] font-normal italic text-cyan">to real progress.</span>
           </h2>
           <div className="flex max-w-sm flex-col items-start gap-3">
-            <p className="text-sm text-white/55">Select a stage to explore a simplified claim journey. This is an interactive illustration — not a claim submission.</p>
-            {!reduced && (
+            <p className="text-sm text-white/55">
+              {pinned ? "Scroll to walk the claim, or select a stage." : "Select a stage to explore a simplified claim journey."} This is an interactive illustration — not a claim submission.
+            </p>
+            {!reduced && !pinned && (
               <button
                 type="button"
                 aria-pressed={playing}
@@ -169,12 +200,12 @@ export default function Journey() {
         </div>
 
         {/* timeline */}
-        <div className="jr-track relative mt-14 sm:mt-16">
+        <div className={`jr-track relative ${pinned ? "mt-8" : "mt-14 sm:mt-16"}`}>
           <svg aria-hidden className="absolute left-[10%] right-[10%] top-6 h-1 w-[80%] overflow-visible" preserveAspectRatio="none" viewBox="0 0 100 2">
             <line className="jr-line origin-left" x1="0" y1="1" x2="100" y2="1" stroke="rgba(127,216,255,.35)" strokeWidth="0.6" vectorEffect="non-scaling-stroke" strokeDasharray="6 8" style={{ animation: reduced ? undefined : "flow 1.2s linear infinite" }} />
           </svg>
           <div aria-hidden className="absolute left-[10%] right-[10%] top-[23px] h-[3px]">
-            <div className="relative h-full rounded-full bg-cyan shadow-[0_0_16px_#7fd8ff,0_0_40px_#24a0ed] transition-[width] duration-700 ease-[cubic-bezier(.16,1,.3,1)]" style={{ width: `${pct}%` }}>
+            <div ref={fill} className={`relative h-full rounded-full bg-cyan shadow-[0_0_16px_#7fd8ff,0_0_40px_#24a0ed] ${pinned ? "" : "transition-[width] duration-700 ease-[cubic-bezier(.16,1,.3,1)]"}`} style={pinned ? { width: "0%" } : { width: `${pct}%` }}>
               <span className="absolute -right-1 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-white shadow-[0_0_14px_#fff]" />
             </div>
           </div>
@@ -192,14 +223,15 @@ export default function Journey() {
                     tabIndex={on ? 0 : -1}
                     onClick={() => {
                       setPlaying(false);
-                      choose(i, "click");
+                      goTo(i, "click");
                     }}
-                    onFocus={() => choose(i, "focus")}
+                    onFocus={() => !pinned && choose(i, "focus")}
                     onKeyDown={(e) => {
                       const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
                       if (!d) return;
                       e.preventDefault();
                       const n = (i + d + STAGES.length) % STAGES.length;
+                      if (pinned) goTo(n, "keyboard");
                       document.getElementById(`jr-tab-${STAGES[n].key}`)?.focus();
                     }}
                     className="group flex flex-col items-center gap-3 px-1"
@@ -240,9 +272,9 @@ export default function Journey() {
         </div>
 
         {/* stage */}
-        <div id="jr-panel" role="tabpanel" aria-labelledby={`jr-tab-${s.key}`} className="jr-stage relative mt-12 overflow-hidden rounded-3xl border border-white/[0.07] bg-[#050b18]">
+        <div id="jr-panel" role="tabpanel" aria-labelledby={`jr-tab-${s.key}`} className={`jr-stage relative overflow-hidden rounded-3xl border border-white/[0.07] bg-[#050b18] ${pinned ? "mt-7" : "mt-12"}`}>
           <motion.div
-            className="relative aspect-[4/5] sm:aspect-[16/9]"
+            className={`relative ${pinned ? "h-[min(56svh,600px)]" : "aspect-[4/5] sm:aspect-[16/9]"}`}
             drag={reduced ? false : "x"}
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.18}
