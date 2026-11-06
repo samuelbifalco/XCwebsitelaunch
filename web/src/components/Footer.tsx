@@ -32,7 +32,7 @@ export default function Footer() {
       </div>
       <div className="mx-auto max-w-7xl px-5 pb-10 text-[11px] leading-relaxed text-white/35 sm:px-8">
         <p>
-          Cinematic scenes, video and the trailer score on this page are AI-generated dramatizations (created with Higgsfield). The people and property shown are not real customers.
+          Cinematic scenes, video, the trailer narration and score on this page are AI-generated dramatizations (created with Higgsfield). The people and property shown are not real customers.
           Product screens come from the official XactaClaim product film. AI features assist adjusters and do not make coverage determinations; messaging and
           voice features apply when configured. © {new Date().getFullYear()} XactaClaim.
         </p>

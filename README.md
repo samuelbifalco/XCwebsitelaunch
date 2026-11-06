@@ -25,7 +25,7 @@ Optional: set `NEXT_PUBLIC_SITE_URL` to the deployed URL so canonical/OG URLs re
 | 4 | Workspace — *One Workspace. Every Claim.* | The same claim items fly into a 3D screen that rises flat and becomes the **real XactaClaim UI**; six capabilities scrub with scroll (clickable / arrow keys). |
 | 5 | Journey | Interactive Inspect → Document → Review → Organize → Progress (hover/click/keyboard), glowing progress line. Labeled as an illustration. |
 | 6 | People — *Better Tools. More Confidence.* | Split screen: reassured homeowner (Higgsfield) vs. XactaClaim product film, glowing seam. |
-| 7 | Finale — *Clarity in Every Claim.* | Same camera angle: storm → soft daylight wipe (house still damaged, tarped). Giant magnetic **Discover XactaClaim** CTA + accurate plan cards. |
+| 7 | Finale — *Clarity in Every Claim.* | Same camera angle: scroll-scrubbed time-lapse from the storm to the same house fully restored at sunrise. Giant magnetic **Discover XactaClaim** CTA + accurate plan cards. |
 
 ## V2 enhancements (no new Higgsfield credits — built from existing footage and stills)
 
@@ -60,6 +60,12 @@ About 70 of 100 credits used; one music attempt on v2.5 failed and was not charg
 - **Trailer:** `xactaclaim_trailer.mp4` — a 60 s letterboxed cut with title cards, real product screens and the score, opened from "Watch the trailer" (hero, nav, finale, phone bar). Sound plays only after the visitor presses play. Captions included. The end screen offers Start free / Explore XactaClaim.
 - **Scroll-scrubbed video:** scrubbed clips are encoded with a keyframe every 4 frames so seeking stays smooth.
 - **Conversion:** "Start free — 1 claim, no credit card" under the finale CTA, a trailer link in the nav, and a phone-only sticky "Start free · no credit card" bar. Claims match xactaclaim.com/pricing ("1 claim • 1 AI trial • No credit card").
+
+## V4 — restored finale, narration, polish
+
+- **Restored house:** new still of the same house fully restored (new roof, no tarp, gutter reattached, fresh landscaping) and a 10 s Kling time-lapse from the storm frame to it. It replaces the finale scrub video and the end of the trailer (GPT Image 2.6 high 2.75 + Kling 12.5 credits).
+- **Voice-over:** 10 narration lines in the Higgsfield "Gideon" preset voice (Seed Audio, about 3 credits), trimmed, compressed and placed on the cut. The score ducks under the voice, and the mix is normalized to about -15 LUFS. Captions carry the narration.
+- **Polish:** plans heading ("Start with one claim. Scale when you're ready."), cleaner finale headline, lighter warm grade, updated disclosures.
 
 ## Accuracy notes
 

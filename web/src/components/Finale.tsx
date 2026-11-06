@@ -36,9 +36,9 @@ export default function Finale() {
       tl.fromTo(".fn-cam", { scale: 1.35 }, { scale: 1, duration: 1 }, 0)
         .to(sky, { p: 1, duration: 0.62, onUpdate: () => scrubTo(film.current, sky.p) }, 0.03)
         .to(".fn-rain", { opacity: 0, duration: 0.25 }, 0.1)
-        .fromTo(".fn-warm", { opacity: 0 }, { opacity: 0.18, duration: 0.45 }, 0.3)
-        .fromTo(".fn-sun", { opacity: 0, scale: 0.6 }, { opacity: 0.55, scale: 1, duration: 0.4 }, 0.4)
-        .fromTo(".fn-rays", { opacity: 0 }, { opacity: 0.25, duration: 0.4 }, 0.45)
+        .fromTo(".fn-warm", { opacity: 0 }, { opacity: 0.08, duration: 0.45 }, 0.3)
+        .fromTo(".fn-sun", { opacity: 0, scale: 0.6 }, { opacity: 0.35, scale: 1, duration: 0.4 }, 0.4)
+        .fromTo(".fn-rays", { opacity: 0 }, { opacity: 0.14, duration: 0.4 }, 0.45)
         .fromTo(".fn-shade", { opacity: 0.55 }, { opacity: 0.15, duration: 0.5 }, 0.2)
         .fromTo(".fn-kicker", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.08 }, 0.5)
         .fromTo(".fn-word", { yPercent: 110, opacity: 0, filter: "blur(10px)" }, { yPercent: 0, opacity: 1, filter: "blur(0px)", stagger: 0.035, duration: 0.12, ease: "power3.out" }, 0.55)
@@ -63,7 +63,7 @@ export default function Finale() {
             mobileSrc="/media/finale_scrub_m.mp4"
             poster="/media/finale_scrub_poster.webp"
             reducedPoster="/media/finale_scrub_end.webp"
-            label="The same house: storm clouds roll away to a soft sunrise. The roof is still tarped and branches are stacked at the curb."
+            label="The same house: the storm rolls away to a golden sunrise and the home is restored — new roof, gutter reattached, lawn and flower beds back."
             className="absolute inset-0 h-full w-full object-cover"
           />
           <div aria-hidden className="fn-sun absolute inset-0 opacity-0 mix-blend-screen [background:radial-gradient(35%_45%_at_14%_50%,rgba(255,196,120,.75),rgba(255,160,80,.2)_45%,transparent_70%)]" />
@@ -79,8 +79,9 @@ export default function Finale() {
         <div aria-hidden className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,6,15,.7)_0%,rgba(3,6,15,.05)_40%,rgba(3,6,15,.2)_65%,rgba(3,6,15,.95)_100%)]" />
 
         <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col items-center justify-center px-5 text-center">
-          <p className="fn-kicker mb-4 font-mono text-[11px] uppercase tracking-[0.3em] text-white/85 [text-shadow:0_2px_12px_rgba(0,0,0,.6)]">Chapter 06 — The same house. A clearer path.</p>
-          <h2 id="fn-title" aria-label="Clarity in Every Claim." className="text-[clamp(2.6rem,8vw,7.5rem)] font-semibold leading-[0.95] tracking-[-0.05em] [text-shadow:0_6px_60px_rgba(0,0,0,.55)]">
+          <div aria-hidden className="fn-kicker pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[70%] w-[min(1100px,95%)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(3,6,15,.55),transparent)]" />
+          <p className="fn-kicker mb-4 font-mono text-[11px] uppercase tracking-[0.3em] text-white/85 [text-shadow:0_2px_12px_rgba(0,0,0,.6)]">Chapter 06 — The same house. Restored.</p>
+          <h2 id="fn-title" aria-label="Clarity in Every Claim." className="relative text-[clamp(2.6rem,8vw,7.5rem)] font-semibold leading-[0.95] tracking-[-0.05em] [text-shadow:0_2px_14px_rgba(0,0,0,.35)]">
             {words.map((w, i) => (
               <span key={w} aria-hidden className="inline-block overflow-hidden pb-[0.1em] align-bottom">
                 <span className={`fn-word inline-block ${w === "Every" ? "font-[family-name:var(--font-instrument-serif)] font-normal italic" : ""}`}>
@@ -116,7 +117,12 @@ export default function Finale() {
         </div>
       </div>
 
-      <div className="relative mx-auto max-w-6xl px-5 pb-24 pt-16 sm:px-8">
+      <div className="relative mx-auto max-w-6xl px-5 pb-24 pt-20 sm:px-8">
+        <div className="mb-10 text-center">
+          <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-cyan/80">Plans</p>
+          <h3 className="mt-3 text-[clamp(1.8rem,3.6vw,2.8rem)] font-semibold tracking-[-0.03em]">Start with one claim. Scale when you&apos;re ready.</h3>
+          <p className="mx-auto mt-3 max-w-xl text-white/60">Solo is free for one real claim file — no credit card. Upgrade to Pro or Pro+ for ongoing AI, communications and your team.</p>
+        </div>
         <div className="grid gap-4 md:grid-cols-3">
           {PLANS.map((p) => (
             <a
