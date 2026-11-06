@@ -5,6 +5,7 @@ import { gsap, useGSAP } from "@/lib/gsap";
 import { useMotionPref } from "@/lib/motion";
 import { ITEMS, ClaimCard, type Item } from "./ClaimItems";
 import Rain from "./Rain";
+import LazyVideo from "./LazyVideo";
 import { HOUSE_ORIGIN } from "./Hero";
 
 const NOTIFS = [
@@ -44,9 +45,9 @@ export default function Chaos() {
       });
 
       // Continue the hero's push-in: emerge from darkness already close to the house.
-      tl.fromTo(".chaos-bg", { opacity: 0 }, { opacity: 1, duration: 0.07 }, 0)
+      tl.fromTo(".chaos-bg", { opacity: 0.6 }, { opacity: 1, duration: 0.07 }, 0)
         .fromTo(".chaos-bg", { scale: 2.1 }, { scale: 1.55, duration: 0.6, ease: "power1.out", immediateRender: false }, 0);
-      tl.fromTo(".chaos-backdrop", { opacity: 0 }, { opacity: 0.32, duration: 0.2 }, 0.3);
+      tl.fromTo(".chaos-backdrop", { opacity: 0 }, { opacity: 0.45, duration: 0.2 }, 0.3);
 
       // Entry waves: photos, then paperwork, then notes, then messages — each from its nearest edge.
       cards.forEach((el, i) => {
@@ -134,9 +135,10 @@ export default function Chaos() {
         </picture>
         <div className="absolute inset-0 bg-ink/55" />
       </div>
-      {/* far backdrop: the paper pile itself */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img aria-hidden src="/media/docs_chaos.webp" alt="" loading="lazy" className="chaos-backdrop absolute inset-0 h-full w-full scale-110 object-cover opacity-0 blur-[3px] mix-blend-luminosity" />
+      {/* far backdrop: the paperwork, caught in the storm (Higgsfield video) */}
+      <div aria-hidden className="chaos-backdrop absolute inset-0 opacity-0">
+        <LazyVideo src="/media/docs_storm.mp4" mobileSrc="/media/docs_storm_m.mp4" poster="/media/docs_storm_poster.webp" className="h-full w-full scale-110 object-cover blur-[2px]" />
+      </div>
       <Rain density={70} className="opacity-40" />
 
       <div className="chaos-shake absolute inset-0">

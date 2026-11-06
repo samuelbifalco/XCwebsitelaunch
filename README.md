@@ -38,6 +38,29 @@ Optional: set `NEXT_PUBLIC_SITE_URL` to the deployed URL so canonical/OG URLs re
 - **Finale:** same house and hero framing; camera pulls back while the storm clears from the sky down, light warms, sun bloom and rays rise, rain fades; scroll-revealed headline and a haloed CTA.
 - **Global:** chapter rail (desktop), long pins only at ≥1024px with stacked phone layouts, full reduced-motion fallbacks.
 
+## V3 — the trailer cut (Higgsfield, 100-credit budget)
+
+New footage, all built from the existing house and character images so the same house, homeowner and adjuster appear throughout:
+
+| Asset | Model | Credits | Used in |
+|---|---|---|---|
+| 4 stills: adjuster arriving, on the ladder, tablet close-up, night office | GPT Image 2.6 (medium, 2K) | 4 | starting frames |
+| `hero_trailer` 10 s storm push-in | Kling 3.0 std | 12.5 | Hero (seamless loop) |
+| `docs_storm` paperwork in the wind | Kling 3.0 std | 6.25 | Chaos backdrop |
+| `arrive_loop` adjuster walks up the driveway | Kling 3.0 std | 6.25 | Adjuster scene 1 |
+| `ladder_loop` adjuster documents the roof | Kling 3.0 std | 6.25 | Adjuster scene 2, Journey "Inspect" |
+| `turn_scrub` worry → relief (start/end frames) | Kling 3.0 std | 6.25 | Adjuster scene 3, scrubbed by scroll |
+| `night_loop` organizing the claim at night | Kling 3.0 std | 6.25 | Workspace opening |
+| `tablet_loop` homeowner points at the tablet | Kling 3.0 std | 6.25 | People, Journey "Progress" |
+| `finale_scrub` 10 s storm → sunrise time-lapse (start/end frames) | Kling 3.0 std | 12.5 | Finale, scrubbed by scroll |
+| Trailer score, 60 s instrumental | ElevenLabs Music v2 | 3.84 | Trailer |
+
+About 70 of 100 credits used; one music attempt on v2.5 failed and was not charged.
+
+- **Trailer:** `xactaclaim_trailer.mp4` — a 60 s letterboxed cut with title cards, real product screens and the score, opened from "Watch the trailer" (hero, nav, finale, phone bar). Sound plays only after the visitor presses play. Captions included. The end screen offers Start free / Explore XactaClaim.
+- **Scroll-scrubbed video:** scrubbed clips are encoded with a keyframe every 4 frames so seeking stays smooth.
+- **Conversion:** "Start free — 1 claim, no credit card" under the finale CTA, a trailer link in the nav, and a phone-only sticky "Start free · no credit card" bar. Claims match xactaclaim.com/pricing ("1 claim • 1 AI trial • No credit card").
+
 ## Accuracy notes
 
 - Copy, feature names and plan availability come from xactaclaim.com (home, /features, /pricing), checked Nov 2026: Solo $0 (1 trial claim, 1 live AI action), Pro $19.99/mo, Pro+ $34.99/mo (estimate comparison + demand drafting are Pro+). "When configured" caveats for SMS/voice are kept.

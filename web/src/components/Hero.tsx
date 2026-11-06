@@ -9,6 +9,7 @@ import CtaLink, { Arrow } from "./CtaLink";
 import SplitHeadline from "./SplitHeadline";
 import Rain from "./Rain";
 import { scrollToTarget } from "./SmoothScroll";
+import { TrailerButton } from "./Trailer";
 
 /** Camera focus: the front of the house. Shared with Chaos so the push-in continues. */
 export const HOUSE_ORIGIN = "46% 64%";
@@ -27,7 +28,7 @@ export default function Hero() {
       return;
     }
     const portrait = window.matchMedia("(max-aspect-ratio: 4/5)").matches;
-    setSrc(portrait ? "/media/hero_storm_m.mp4" : "/media/hero_storm.mp4");
+    setSrc(portrait ? "/media/hero_trailer_m.mp4" : "/media/hero_trailer.mp4");
   }, [ready, reduced]);
 
   useEffect(() => {
@@ -60,7 +61,7 @@ export default function Hero() {
         .to(".hero-sub", { y: -80, opacity: 0, filter: "blur(6px)", duration: 0.3 }, 0.1)
         .to(".hero-ctas", { y: -60, opacity: 0, duration: 0.25 }, 0.14)
         .to(".hero-rain-near", { opacity: 0.9, scale: 1.3, duration: 0.8 }, 0)
-        .to(".hero-shade", { opacity: 1, duration: 0.45, ease: "power2.in" }, 0.55)
+        .to(".hero-shade", { opacity: 0.55, duration: 0.45, ease: "power2.in" }, 0.55)
         .to(".hero-cue", { opacity: 0, duration: 0.1 }, 0);
 
       // Depth parallax: each layer drifts a different distance with the pointer.
@@ -130,7 +131,7 @@ export default function Hero() {
               loop
               autoPlay
               preload="auto"
-              poster="/media/house_storm.webp"
+              poster="/media/hero_trailer_poster.webp"
               aria-hidden
               onCanPlay={() => setVideoReady(true)}
               className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1500ms] ${videoReady ? "opacity-100" : "opacity-0"}`}
@@ -205,6 +206,7 @@ export default function Hero() {
                 <path d="M10 4v11m0 0 4.5-4.5M10 15l-4.5-4.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
               </svg>
             </CtaLink>
+            <TrailerButton location="hero" />
           </motion.div>
         </div>
       </div>

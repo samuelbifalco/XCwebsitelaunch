@@ -4,12 +4,13 @@ import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { useMotionPref, useIsDesktop } from "@/lib/motion";
 import SplitHeadline from "./SplitHeadline";
+import LazyVideo, { scrubTo } from "./LazyVideo";
 
 const SCENES = [
   {
     step: "Arrive",
-    t: "Inspects the property",
-    d: "The adjuster walks the property with the homeowner — on the roof, at the gutter line, seeing what the photos alone can't show.",
+    t: "Arrives on site",
+    d: "A professional public adjuster walks the property — on the roof, at the gutter line, seeing what the photos alone can't show.",
   },
   {
     step: "Document",
@@ -31,6 +32,7 @@ const SHOTS = [
 
 export default function Adjuster() {
   const root = useRef<HTMLElement>(null);
+  const turnRef = useRef<HTMLVideoElement | null>(null);
   const { reduced, ready } = useMotionPref();
   const desktop = useIsDesktop();
   const pinned = ready && !reduced && desktop;
@@ -47,17 +49,17 @@ export default function Adjuster() {
         return;
       }
 
+      const turn = { p: 0 };
       const tl = gsap.timeline({
         defaults: { ease: "none" },
-        scrollTrigger: { trigger: root.current, start: "top top", end: "+=340%", scrub: 1, pin: true, anticipatePin: 1 },
+        scrollTrigger: { trigger: root.current, start: "top top", end: "+=380%", scrub: 1, pin: true, anticipatePin: 1 },
       });
 
       // Scene 1 — the adjuster arrives (opens from the chaos' point of light).
       tl.fromTo(".adj-s1", { clipPath: "circle(3% at 50% 50%)" }, { clipPath: "circle(80% at 50% 50%)", duration: 0.08, ease: "power2.inOut" }, 0)
-        .fromTo(".adj-s1 img", { scale: 1.45 }, { scale: 1.12, duration: 0.12 }, 0)
+        .fromTo(".adj-media-1", { scale: 1.35 }, { scale: 1.08, duration: 0.12 }, 0)
         .fromTo(".adj-panel", { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: 0.06 }, 0.05)
-        .fromTo(".adj-bracket", { opacity: 0, scale: 1.6 }, { opacity: 1, scale: 1, stagger: 0.03, duration: 0.05, ease: "power2.out" }, 0.1)
-        .to(".adj-s1 img", { scale: 1.3, xPercent: -3, duration: 0.2 }, 0.12)
+        .to(".adj-media-1", { scale: 1.22, duration: 0.2 }, 0.12)
         .fromTo(".adj-bar-0", { scaleX: 0 }, { scaleX: 1, duration: 0.3 }, 0)
         .fromTo(".adj-copy-0", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.04 }, 0.08);
 
@@ -66,32 +68,35 @@ export default function Adjuster() {
         .to(".adj-s1", { scale: 1.08, filter: "brightness(.4)", duration: 0.08 }, 0.3)
         .to(".adj-copy-0", { opacity: 0, y: -16, duration: 0.03 }, 0.3)
         .fromTo(".adj-copy-1", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.04 }, 0.35)
-        .fromTo(".adj-bar-1", { scaleX: 0 }, { scaleX: 1, duration: 0.33 }, 0.32);
+        .fromTo(".adj-bar-1", { scaleX: 0 }, { scaleX: 1, duration: 0.33 }, 0.32)
+        .fromTo(".adj-ladder", { scale: 1.15 }, { scale: 1, duration: 0.14 }, 0.3)
+        .fromTo(".adj-vf", { opacity: 0 }, { opacity: 1, duration: 0.03 }, 0.43);
 
       SHOTS.forEach((_, i) => {
-        const t = 0.38 + i * 0.09;
+        const t = 0.45 + i * 0.07;
         if (i > 0) tl.fromTo(`.adj-shot-${i}`, { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1.02, duration: 0.03 }, t - 0.01);
-        tl.fromTo(`.adj-shot-${i} img`, { scale: 1.1, xPercent: i % 2 ? 2 : -2 }, { scale: 1, xPercent: 0, duration: 0.09 }, t)
+        tl.fromTo(`.adj-shot-${i} img`, { scale: 1.1, xPercent: i % 2 ? 2 : -2 }, { scale: 1, xPercent: 0, duration: 0.07 }, t)
           .fromTo(".adj-focus", { scale: 1.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.03, ease: "power3.out" }, t + 0.01)
           .to(".adj-focus", { borderColor: "#7fd8ff", duration: 0.005 }, t + 0.04)
           .fromTo(".adj-flash", { opacity: 0 }, { opacity: 0.85, duration: 0.004 }, t + 0.05)
           .to(".adj-flash", { opacity: 0, duration: 0.02 }, t + 0.054)
           .fromTo(`.adj-thumb-${i}`, { opacity: 0, y: 20, scale: 1.4 }, { opacity: 1, y: 0, scale: 1, duration: 0.025, ease: "back.out(2)" }, t + 0.055)
           .fromTo(`.adj-label-${i}`, { opacity: 0 }, { opacity: 1, duration: 0.01 }, t)
-          .to(`.adj-label-${i}`, { opacity: i === SHOTS.length - 1 ? 1 : 0, duration: 0.01 }, t + 0.085)
-          .to(".adj-focus", { borderColor: "rgba(255,255,255,.7)", duration: 0.005 }, t + 0.085);
+          .to(`.adj-label-${i}`, { opacity: i === SHOTS.length - 1 ? 1 : 0, duration: 0.01 }, t + 0.065)
+          .to(".adj-focus", { borderColor: "rgba(255,255,255,.7)", duration: 0.005 }, t + 0.065);
       });
 
       // → Scene 3 — guiding: a vertical reveal and a slow push toward the tablet.
       tl.fromTo(".adj-s3", { clipPath: "inset(100% 0 0 0)" }, { clipPath: "inset(0% 0 0 0)", duration: 0.07, ease: "power2.inOut" }, 0.66)
-        .fromTo(".adj-s3 img", { scale: 1.25 }, { scale: 1, duration: 0.08 }, 0.66)
+        .fromTo(".adj-media-3", { scale: 1.2 }, { scale: 1, duration: 0.08 }, 0.66)
+        .to(turn, { p: 1, duration: 0.2, onUpdate: () => scrubTo(turnRef.current, turn.p) }, 0.68)
         .to(".adj-s2", { scale: 0.92, filter: "brightness(.4)", duration: 0.07 }, 0.66)
         .to(".adj-copy-1", { opacity: 0, y: -16, duration: 0.03 }, 0.66)
         .fromTo(".adj-copy-2", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.04 }, 0.7)
         .fromTo(".adj-bar-2", { scaleX: 0 }, { scaleX: 1, duration: 0.26 }, 0.67)
-        .to(".adj-s3 img", { scale: 1.5, duration: 0.24, ease: "power1.in" }, 0.74)
-        .fromTo(".adj-glow", { opacity: 0 }, { opacity: 1, duration: 0.2 }, 0.74)
-        .fromTo(".adj-support", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.04 }, 0.78)
+        .to(".adj-media-3", { scale: 1.6, duration: 0.1, ease: "power1.in" }, 0.88)
+        .fromTo(".adj-glow", { opacity: 0 }, { opacity: 1, duration: 0.12 }, 0.84)
+        .fromTo(".adj-support", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.04 }, 0.8)
         // Hand-off: through the tablet into the workspace.
         .to(".adj-panel", { opacity: 0, x: 40, duration: 0.05 }, 0.92)
         .fromTo(".adj-out", { opacity: 0 }, { opacity: 1, duration: 0.07 }, 0.93);
@@ -123,19 +128,21 @@ export default function Adjuster() {
               <li key={s.step} className="adj-m-card">
                 <div className="adj-m-media relative overflow-hidden rounded-3xl">
                   {i === 1 ? (
-                    <div className="grid grid-cols-3 gap-1 bg-black">
-                      {SHOTS.map((sh) => (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img key={sh.src} src={sh.src} alt={sh.label} loading="lazy" className="adj-m-img aspect-[3/4] w-full object-cover" />
-                      ))}
-                    </div>
+                    <>
+                      <LazyVideo src="/media/ladder_loop_m.mp4" poster="/media/ladder_loop_poster.webp" label="The adjuster photographs roof damage from a ladder." className="adj-m-img aspect-[4/5] w-full object-cover" />
+                      <div className="grid grid-cols-3 gap-1 bg-black pt-1">
+                        {SHOTS.map((sh) => (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img key={sh.src} src={sh.src} alt={sh.label} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+                        ))}
+                      </div>
+                    </>
                   ) : (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={i === 0 ? "/media/duo_concerned_m.webp" : "/media/duo_reassured_m.webp"}
-                      alt={i === 0 ? "The adjuster points out roof damage while the worried homeowner listens." : "The adjuster shows the homeowner his tablet; she looks relieved."}
-                      loading="lazy"
-                      className="adj-m-img aspect-[4/5] w-full object-cover"
+                    <LazyVideo
+                      src={i === 0 ? "/media/arrive_loop_m.mp4" : "/media/turn_scrub_m.mp4"}
+                      poster={i === 0 ? "/media/arrive_loop_poster.webp" : "/media/turn_scrub_end.webp"}
+                      label={i === 0 ? "The adjuster walks up the driveway to the storm-damaged house." : "The worried homeowner relaxes as the adjuster shows her his tablet."}
+                      className={`adj-m-img aspect-[4/5] w-full object-cover ${i === 0 ? "object-[72%_center]" : "object-[45%_center]"}`}
                     />
                   )}
                   <span className="absolute left-4 top-4 rounded-full bg-ink/70 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.25em] text-cyan backdrop-blur">
@@ -155,20 +162,22 @@ export default function Adjuster() {
 
   return (
     <section ref={root} id="adjuster" aria-labelledby="adj-title" className="relative h-[100svh] overflow-hidden bg-ink">
-      {/* Scene 1 */}
+      {/* Scene 1 — the adjuster arrives (Higgsfield video) */}
       <div className="adj-s1 absolute inset-0 overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/media/duo_concerned.webp" alt="A public adjuster holding a tablet points toward the damaged roof while a worried homeowner listens with her arms crossed." className="h-full w-full object-cover object-[35%_center]" style={{ transformOrigin: "40% 35%" }} />
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-ink/10 via-ink/20 to-ink/90" />
-        <div aria-hidden className="grid-lines absolute inset-0 opacity-50 [mask-image:linear-gradient(90deg,transparent,black_60%)]" />
-        <div aria-hidden className="absolute inset-0">
-          <Bracket className="adj-bracket left-[17%] top-[16%] h-[34%] w-[16%]" label="Homeowner" />
-          <Bracket className="adj-bracket left-[35%] top-[12%] h-[38%] w-[17%]" label="Adjuster" />
+        <div className="adj-media-1 absolute inset-0" style={{ transformOrigin: "62% 55%" }}>
+          <LazyVideo src="/media/arrive_loop.mp4" poster="/media/arrive_loop_poster.webp" label="The adjuster walks up the wet driveway toward the storm-damaged house." className="h-full w-full object-cover" />
         </div>
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-ink/10 via-ink/10 to-ink/90" />
+        <div aria-hidden className="grid-lines absolute inset-0 opacity-40 [mask-image:linear-gradient(90deg,transparent,black_70%)]" />
       </div>
 
       {/* Scene 2 — field documentation viewfinder */}
       <div className="adj-s2 absolute inset-0 overflow-hidden bg-black" style={{ clipPath: "polygon(100% 0,100% 0,100% 100%,100% 100%)" }}>
+        <div className="adj-ladder absolute inset-0">
+          <LazyVideo src="/media/ladder_loop.mp4" poster="/media/ladder_loop_poster.webp" label="On a ladder at the roof edge, the adjuster photographs the missing shingles with his tablet." className="h-full w-full object-cover" />
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-ink/85" />
+        </div>
+        <div className="adj-vf absolute inset-0 opacity-0">
         {SHOTS.map((sh, i) => (
           <div key={sh.src} className={`adj-shot-${i} absolute inset-0 overflow-hidden`} style={{ opacity: i === 0 ? 1 : 0 }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -200,14 +209,23 @@ export default function Adjuster() {
           </div>
           <div className="adj-flash absolute inset-0 bg-white opacity-0" />
         </div>
+        </div>
       </div>
 
-      {/* Scene 3 */}
+      {/* Scene 3 — worry turns to relief, scrubbed by scroll (Higgsfield video) */}
       <div className="adj-s3 absolute inset-0 overflow-hidden" style={{ clipPath: "inset(100% 0 0 0)" }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/media/duo_reassured.webp" alt="The adjuster shows the homeowner his tablet on the walkway; she looks relieved as the clouds break." loading="lazy" className="h-full w-full object-cover object-[38%_center]" style={{ transformOrigin: "47% 62%" }} />
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-transparent via-ink/10 to-ink/85" />
-        <div aria-hidden className="adj-glow absolute inset-0 opacity-0 [background:radial-gradient(30%_30%_at_45%_62%,rgba(36,160,237,.55),transparent_70%)] mix-blend-screen" />
+        <div className="adj-media-3 absolute inset-0" style={{ transformOrigin: "49% 62%" }}>
+          <LazyVideo
+            ref={turnRef}
+            mode="scrub"
+            src="/media/turn_scrub.mp4"
+            poster="/media/turn_scrub_poster.webp"
+            label="The worried homeowner uncrosses her arms and leans in, relieved, as the adjuster shows her his tablet."
+            className="h-full w-full object-cover"
+          />
+        </div>
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-transparent via-ink/5 to-ink/85" />
+        <div aria-hidden className="adj-glow absolute inset-0 opacity-0 [background:radial-gradient(30%_30%_at_49%_62%,rgba(36,160,237,.55),transparent_70%)] mix-blend-screen" />
       </div>
 
       <div aria-hidden className="adj-out pointer-events-none absolute inset-0 z-20 bg-[#06101f] opacity-0" />
@@ -256,15 +274,3 @@ function Corners({ className }: { className: string }) {
   );
 }
 
-function Bracket({ className, label }: { className: string; label: string }) {
-  const c = "absolute h-5 w-5 border-cyan";
-  return (
-    <div className={`absolute ${className}`}>
-      <span className={`${c} left-0 top-0 border-l-2 border-t-2`} />
-      <span className={`${c} right-0 top-0 border-r-2 border-t-2`} />
-      <span className={`${c} bottom-0 left-0 border-b-2 border-l-2`} />
-      <span className={`${c} bottom-0 right-0 border-b-2 border-r-2`} />
-      <span className="absolute -top-6 left-0 rounded bg-electric/90 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider">{label}</span>
-    </div>
-  );
-}

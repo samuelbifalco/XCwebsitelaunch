@@ -6,8 +6,10 @@ import { useMotionPref } from "@/lib/motion";
 import { LINKS, withUtm } from "@/lib/links";
 import { track } from "@/lib/analytics";
 import CtaLink, { Arrow } from "./CtaLink";
+import { TrailerButton } from "./Trailer";
 import Rain from "./Rain";
 import { HOUSE_ORIGIN } from "./Hero";
+import LazyVideo, { scrubTo } from "./LazyVideo";
 
 // Pricing as published on xactaclaim.com/pricing (plus applicable tax).
 const PLANS = [
@@ -18,27 +20,25 @@ const PLANS = [
 
 export default function Finale() {
   const root = useRef<HTMLElement>(null);
+  const film = useRef<HTMLVideoElement | null>(null);
   const { reduced, ready } = useMotionPref();
 
   useGSAP(
     () => {
       if (!ready || reduced) return;
       const stage = root.current!.querySelector<HTMLElement>(".fn-stage")!;
-      const sky = { clear: -10 };
-      const apply = () => stage.style.setProperty("--clear", `${sky.clear}%`);
-      apply();
+      const sky = { p: 0 };
       const tl = gsap.timeline({
         defaults: { ease: "none" },
         scrollTrigger: { trigger: stage, start: "top top", end: "+=220%", scrub: 1, pin: true, anticipatePin: 1 },
       });
       // The camera pulls back to the hero's framing while the storm breaks from the sky down.
       tl.fromTo(".fn-cam", { scale: 1.35 }, { scale: 1, duration: 1 }, 0)
-        .fromTo(".fn-storm", { xPercent: 0 }, { xPercent: 2.5, duration: 0.6 }, 0)
-        .to(sky, { clear: 150, duration: 0.55, ease: "power1.inOut", onUpdate: apply }, 0.08)
+        .to(sky, { p: 1, duration: 0.62, onUpdate: () => scrubTo(film.current, sky.p) }, 0.03)
         .to(".fn-rain", { opacity: 0, duration: 0.25 }, 0.1)
-        .fromTo(".fn-warm", { opacity: 0 }, { opacity: 0.32, duration: 0.45 }, 0.25)
-        .fromTo(".fn-sun", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.45 }, 0.3)
-        .fromTo(".fn-rays", { opacity: 0 }, { opacity: 0.45, duration: 0.4 }, 0.35)
+        .fromTo(".fn-warm", { opacity: 0 }, { opacity: 0.18, duration: 0.45 }, 0.3)
+        .fromTo(".fn-sun", { opacity: 0, scale: 0.6 }, { opacity: 0.55, scale: 1, duration: 0.4 }, 0.4)
+        .fromTo(".fn-rays", { opacity: 0 }, { opacity: 0.25, duration: 0.4 }, 0.45)
         .fromTo(".fn-shade", { opacity: 0.55 }, { opacity: 0.15, duration: 0.5 }, 0.2)
         .fromTo(".fn-kicker", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.08 }, 0.5)
         .fromTo(".fn-word", { yPercent: 110, opacity: 0, filter: "blur(10px)" }, { yPercent: 0, opacity: 1, filter: "blur(0px)", stagger: 0.035, duration: 0.12, ease: "power3.out" }, 0.55)
@@ -53,33 +53,19 @@ export default function Finale() {
 
   return (
     <section ref={root} id="clarity" aria-labelledby="fn-title" className="relative bg-ink">
-      <div className="fn-stage relative h-[100svh] min-h-[620px] overflow-hidden" style={{ ["--clear" as string]: reduced ? "150%" : "-10%" }}>
+      <div className="fn-stage relative h-[100svh] min-h-[620px] overflow-hidden">
         <div className="fn-cam absolute inset-0" style={{ transformOrigin: HOUSE_ORIGIN }}>
-          <div className="fn-storm absolute -inset-x-8 inset-y-0">
-            <picture>
-              <source media="(max-aspect-ratio: 4/5)" srcSet="/media/house_storm_m.webp" />
-              { }
-              <img src="/media/house_storm.webp" alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
-            </picture>
-          </div>
-          <div
-            className="fn-day absolute inset-0"
-            style={{
-              maskImage: "linear-gradient(180deg, #000 calc(var(--clear) - 35%), transparent var(--clear))",
-              WebkitMaskImage: "linear-gradient(180deg, #000 calc(var(--clear) - 35%), transparent var(--clear))",
-            }}
-          >
-            <picture>
-              <source media="(max-aspect-ratio: 4/5)" srcSet="/media/house_day_m.webp" />
-              { }
-              <img
-                src="/media/house_day.webp"
-                alt="The same house in soft morning light. The roof is tarped and branches are stacked at the curb — still damaged, but the storm has passed."
-                loading="lazy"
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-            </picture>
-          </div>
+          {/* Same camera position as the hero: the storm clears, scrubbed by scroll (Higgsfield video) */}
+          <LazyVideo
+            ref={film}
+            mode="scrub"
+            src="/media/finale_scrub.mp4"
+            mobileSrc="/media/finale_scrub_m.mp4"
+            poster="/media/finale_scrub_poster.webp"
+            reducedPoster="/media/finale_scrub_end.webp"
+            label="The same house: storm clouds roll away to a soft sunrise. The roof is still tarped and branches are stacked at the curb."
+            className="absolute inset-0 h-full w-full object-cover"
+          />
           <div aria-hidden className="fn-sun absolute inset-0 opacity-0 mix-blend-screen [background:radial-gradient(35%_45%_at_14%_50%,rgba(255,196,120,.75),rgba(255,160,80,.2)_45%,transparent_70%)]" />
           <div aria-hidden className="fn-rays absolute inset-0 overflow-hidden opacity-0 mix-blend-screen [mask-image:radial-gradient(60%_70%_at_14%_50%,black,transparent_75%)]">
             <div className="absolute left-[14%] top-1/2 h-[220vmax] w-[220vmax] -translate-x-1/2 -translate-y-1/2 animate-[rays_90s_linear_infinite] [background:repeating-conic-gradient(from_0deg,rgba(255,220,170,.35)_0deg_3deg,transparent_3deg_14deg)]" />
@@ -114,6 +100,18 @@ export default function Finale() {
             <CtaLink href={withUtm(LINKS.home, "finale-discover")} event="cta_click" location="finale_primary" variant="giant">
               Discover XactaClaim <Arrow className="!h-6 !w-6" />
             </CtaLink>
+          </div>
+          <div className="fn-cta mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-[15px]">
+            <a
+              href={withUtm(LINKS.register, "finale-start-free")}
+              target="_blank"
+              rel="noopener"
+              onClick={() => track("cta_click", { location: "finale_start_free" })}
+              className="group inline-flex items-center gap-2 font-medium text-white underline decoration-cyan/60 decoration-2 underline-offset-[6px] hover:decoration-cyan [text-shadow:0_2px_12px_rgba(0,0,0,.7)]"
+            >
+              Start free — 1 claim, no credit card <Arrow />
+            </a>
+            <TrailerButton location="finale" className="[text-shadow:0_2px_12px_rgba(0,0,0,.7)]" />
           </div>
         </div>
       </div>

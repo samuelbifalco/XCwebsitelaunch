@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { useMotionPref } from "@/lib/motion";
 import { track } from "@/lib/analytics";
+import LazyVideo from "./LazyVideo";
 
 type Stage = {
   key: string;
@@ -14,6 +15,7 @@ type Stage = {
   rows: { t: string; s: "done" | "active" | "review" }[];
   tag: string;
   img: string;
+  video?: string;
   imgAlt: string;
   real?: boolean;
   pos?: string;
@@ -32,7 +34,7 @@ const STAGES: Stage[] = [
       { t: "Phase: Inspection", s: "active" },
     ],
     tag: "Mobile companion for field work · Pro / Pro+",
-    img: "/media/duo_concerned.webp", imgAlt: "The adjuster explains the roof damage to the homeowner.", pos: "35% center",
+    img: "/media/ladder_loop_poster.webp", video: "/media/ladder_loop.mp4", imgAlt: "The adjuster photographs the damaged roof from a ladder.", pos: "40% center",
   },
   {
     key: "document",
@@ -84,7 +86,7 @@ const STAGES: Stage[] = [
       { t: "Next step scheduled", s: "active" },
     ],
     tag: "Tracked SMS/email when configured · Pro / Pro+",
-    img: "/media/duo_reassured.webp", imgAlt: "The homeowner, reassured, reviews the tablet with the adjuster.", pos: "38% center",
+    img: "/media/tablet_loop_poster.webp", video: "/media/tablet_loop.mp4", imgAlt: "The homeowner, reassured, points at the claim on the adjuster's tablet.", pos: "60% center",
   },
 ];
 
@@ -259,8 +261,13 @@ export default function Journey() {
                 exit={reduced ? undefined : { opacity: 0, x: `${-dir * 8}%`, scale: 0.98 }}
                 transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={s.img} alt={s.imgAlt} loading="lazy" draggable={false} className={`h-full w-full ${s.real ? "object-contain bg-[#081427]" : "object-cover"}`} style={{ objectPosition: s.pos }} />
+                { }
+                {s.video ? (
+                  <LazyVideo src={s.video} poster={s.img} label={s.imgAlt} className="h-full w-full object-cover" style={{ objectPosition: s.pos }} />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={s.img} alt={s.imgAlt} loading="lazy" draggable={false} className={`h-full w-full ${s.real ? "object-contain bg-[#081427]" : "object-cover"}`} style={{ objectPosition: s.pos }} />
+                )}
               </motion.div>
             </AnimatePresence>
             <div aria-hidden className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(3,6,15,.92)_0%,rgba(3,6,15,.55)_45%,rgba(3,6,15,.05)_75%)] max-sm:bg-[linear-gradient(180deg,rgba(3,6,15,.1)_20%,rgba(3,6,15,.95)_70%)]" />

@@ -6,6 +6,7 @@ import { useMotionPref, useIsDesktop } from "@/lib/motion";
 import { track } from "@/lib/analytics";
 import { ITEMS, ClaimCard, type Item } from "./ClaimItems";
 import { scrollToTarget } from "./SmoothScroll";
+import LazyVideo from "./LazyVideo";
 
 /* ---------- Real product screens (frames from the official XactaClaim product film) ---------- */
 
@@ -121,7 +122,7 @@ export default function Workspace() {
         scrollTrigger: {
           trigger: stage,
           start: "top top",
-          end: "+=440%",
+          end: "+=480%",
           scrub: 1,
           pin: true,
           anticipatePin: 1,
@@ -162,6 +163,8 @@ export default function Workspace() {
           0.12 + (i % 5) * 0.006
         );
       });
+      tl.fromTo(".ws-night", { scale: 1.05 }, { scale: 1.25, duration: 0.1 }, 0)
+        .to(".ws-night", { scale: 2.6, opacity: 0, duration: 0.12, ease: "power2.in" }, 0.1);
       tl.to(".ws-cloud", { rotateY: 0, rotateX: 0, duration: 0.1, ease: "power2.inOut" }, 0.12)
         .to(".ws-intro", { opacity: 0, y: -24, duration: 0.04 }, 0.13)
         .fromTo(".ws-group", { opacity: 0, y: 12 }, { opacity: 1, y: 0, stagger: 0.01, duration: 0.04 }, 0.17)
@@ -225,6 +228,11 @@ export default function Workspace() {
 
       {pinned && (
         <>
+          {/* That night: the adjuster sits down to organize the claim (Higgsfield video) */}
+          <div className="ws-night absolute inset-0 z-[5]" style={{ transformOrigin: "80% 50%" }}>
+            <LazyVideo src="/media/night_loop.mp4" poster="/media/night_loop_poster.webp" label="That night, the adjuster organizes the claim at his laptop." className="h-full w-full object-cover" />
+            <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-ink/60 via-ink/25 to-ink/70" />
+          </div>
           <div aria-hidden className="pointer-events-none absolute inset-0 z-20 [perspective:1100px]">
             <div className="ws-cloud absolute inset-0 [transform-style:preserve-3d]">
               {CLOUD.map((it) => (
@@ -244,9 +252,9 @@ export default function Workspace() {
               </p>
             ))}
           </div>
-          <div className="ws-intro pointer-events-none absolute inset-x-0 top-[12%] z-10 px-5 text-center">
+          <div className="ws-intro pointer-events-none absolute inset-x-0 top-[12%] z-30 px-5 text-center">
             <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-cyan/80">Chapter 03 — Enter XactaClaim</p>
-            <p className="mt-3 text-[clamp(1.6rem,3.6vw,3rem)] font-semibold tracking-[-0.03em]">Everything finds its place.</p>
+            <p className="mt-3 text-[clamp(1.6rem,3.6vw,3rem)] font-semibold tracking-[-0.03em] [text-shadow:0_4px_30px_rgba(0,0,0,.8)]">That night, everything finds its place.</p>
           </div>
         </>
       )}

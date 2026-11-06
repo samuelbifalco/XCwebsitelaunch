@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { useMotionPref, useIsDesktop } from "@/lib/motion";
 import SplitHeadline from "./SplitHeadline";
+import LazyVideo from "./LazyVideo";
 
 const BEATS = [
   {
@@ -70,7 +71,7 @@ export default function People() {
           },
         },
       });
-      tl.fromTo(".pp-real img", { scale: 1.2 }, { scale: 1, duration: 1 }, 0)
+      tl.fromTo(".pp-real-media", { scale: 1.15 }, { scale: 1, duration: 1 }, 0)
         .to(state, { split: SPLITS[0], duration: 0.16, ease: "power2.out", onUpdate: apply }, 0.02)
         .fromTo(".pp-head", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.08 }, 0)
         .fromTo(".pp-device", { opacity: 0, x: 80, rotateY: -18 }, { opacity: 1, x: 0, rotateY: 0, duration: 0.14, ease: "power2.out" }, 0.08)
@@ -98,8 +99,7 @@ export default function People() {
           <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.3em] text-cyan/80">Chapter 05 — Technology that supports people</p>
           <div id="pp-title">{heading}</div>
           <figure className="pp-m-reveal relative mt-10 overflow-hidden rounded-3xl">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/media/duo_reassured_m.webp" alt="The adjuster shows the homeowner his tablet on the walkway; she looks relieved as the clouds break." loading="lazy" className="aspect-[4/5] w-full object-cover sm:aspect-video" />
+            <LazyVideo src="/media/tablet_loop_m.mp4" poster="/media/tablet_loop_poster.webp" label="The homeowner points at the claim on the adjuster's tablet and smiles." className="aspect-[4/5] w-full object-cover sm:aspect-video" />
             <figcaption className="absolute bottom-4 left-4 font-mono text-[11px] uppercase tracking-[0.25em] text-white/85">The real world</figcaption>
           </figure>
           <div aria-hidden className="mx-auto h-14 w-[2px] bg-gradient-to-b from-cyan to-electric shadow-[0_0_14px_#7fd8ff]" />
@@ -126,9 +126,8 @@ export default function People() {
       <div className="pp-stage relative h-[100svh] overflow-hidden" style={{ ["--split" as string]: 1 }}>
         {/* the real world */}
         <div className="pp-real absolute inset-0" style={{ clipPath: "inset(0 calc((1 - var(--split)) * 100%) 0 0)" }}>
-          <div className="absolute inset-y-0 left-0 w-[80%] overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/media/duo_reassured.webp" alt="The adjuster shows the homeowner his tablet on the walkway; she looks relieved as the clouds break." loading="lazy" className="h-full w-full object-cover object-[45%_center]" />
+          <div className="pp-real-media absolute inset-y-0 left-0 overflow-hidden" style={{ width: "calc(var(--split) * 100%)" }}>
+            <LazyVideo src="/media/tablet_loop.mp4" poster="/media/tablet_loop_poster.webp" label="The homeowner points at the claim on the adjuster's tablet and smiles." className="h-full w-full object-cover" />
           </div>
           <div aria-hidden className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,6,15,.7)_0%,transparent_30%,transparent_55%,rgba(3,6,15,.9)_100%)]" />
           <p className="absolute bottom-6 left-[4vw] font-mono text-[11px] uppercase tracking-[0.25em] text-white/80">The real world</p>
@@ -165,7 +164,7 @@ export default function People() {
         </div>
 
         {/* the connection: tablet ⇄ claim file */}
-        <div aria-hidden className="pointer-events-none absolute" style={{ top: "61%", left: "39%", width: "calc(var(--split) * 100% + 4vw - 39%)" }}>
+        <div aria-hidden className="pointer-events-none absolute" style={{ top: "58%", left: "calc(var(--split) * 50% + 3.5svh)", width: "calc(var(--split) * 50% + 4vw - 3.5svh)" }}>
           <div className="pp-beam h-[2px] origin-left rounded-full shadow-[0_0_12px_#7fd8ff,0_0_30px_#24a0ed] [background:repeating-linear-gradient(90deg,#7fd8ff_0_18px,rgba(127,216,255,.25)_18px_40px)] [background-size:160px_2px]" style={{ animation: "beam 1.6s linear infinite" }} />
           <span className="pp-node absolute -left-2 -top-[7px] h-4 w-4 rounded-full border-2 border-cyan bg-ink shadow-[0_0_14px_#7fd8ff]" />
           <span className="pp-node absolute -right-2 -top-[7px] h-4 w-4 rounded-full bg-cyan shadow-[0_0_14px_#7fd8ff]" />

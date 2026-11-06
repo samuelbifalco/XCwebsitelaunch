@@ -6,6 +6,7 @@ import { LINKS, withUtm } from "@/lib/links";
 import { track } from "@/lib/analytics";
 import { useMotionPref } from "@/lib/motion";
 import CtaLink from "./CtaLink";
+import { openTrailer } from "./Trailer";
 
 const chapters = [
   { id: "chaos", label: "The chaos" },
@@ -61,6 +62,14 @@ export default function Nav() {
           >
             {reduced ? "Motion: reduced" : "Reduce motion"}
           </button>
+          <button
+            type="button"
+            onClick={() => openTrailer("nav")}
+            className="hidden items-center gap-2 rounded-full px-3 py-2 text-[13px] text-white/80 transition hover:text-white md:inline-flex"
+          >
+            <svg aria-hidden viewBox="0 0 16 16" className="h-3 w-3" fill="currentColor"><path d="M4 2.5v11l9-5.5z" /></svg>
+            Trailer
+          </button>
           <a
             href={withUtm(LINKS.login, "nav-login")}
             target="_blank"
@@ -76,15 +85,7 @@ export default function Nav() {
         </div>
       </div>
       <motion.div aria-hidden className="h-px origin-left bg-gradient-to-r from-electric via-cyan to-electric" style={{ scaleX: progress }} />
-      {/* mobile motion toggle */}
-      <button
-        type="button"
-        onClick={toggle}
-        aria-pressed={reduced}
-        className="fixed bottom-4 right-4 z-50 rounded-full border border-white/15 bg-ink/70 px-3 py-2 text-[11px] text-white/75 backdrop-blur sm:hidden"
-      >
-        {reduced ? "Motion off" : "Reduce motion"}
-      </button>
+
     </header>
   );
 }
